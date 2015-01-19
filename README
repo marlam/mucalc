@@ -1,0 +1,32 @@
+mucalc - convenient command line calculator
+===========================================
+
+This calculator is intended for command line users.
+
+It evaluates mathematical expressions that are given as arguments, read from
+an input stream, or typed interatively.
+
+In interactive mode, it provides line editing with persistent history using
+GNU readline <https://www.gnu.org/software/readline>.
+
+The evaluation of expressions is handled by the muParser
+<http://muparser.beltoforion.de/> math parser library.
+
+Available constants:
+  pi, e
+ 
+Available functions:
+  deg, rad,
+  sin, asin, cos, acos, tan, atan, atan2,
+  sinh, asinh, cosh, acosh, tanh, atanh,
+  pow, exp, exp2, exp10, log, ln, log2, log10, sqrt, cbrt,
+  abs, sign, fract, int, ceil, floor, round, rint, trunc, mod,
+  min, max, sum, avg, med,
+  clamp, step, smoothstep, mix
+
+Available operators:
+  ^, *, /, +, -, ==, !=, <, >, <=, >=, ||, &&, ?:
+
+Other features:
+  Support for variables
+  Support for multiple expressions on one line, separated by commas
