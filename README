@@ -4,7 +4,7 @@ mucalc - convenient command line calculator
 This calculator is intended for command line users.
 
 It evaluates mathematical expressions that are given as arguments, read from
-an input stream, or typed interatively.
+an input stream, or typed interactively.
 
 In interactive mode, it provides line editing with persistent history using
 GNU readline <https://www.gnu.org/software/readline>.
@@ -30,3 +30,11 @@ Available operators:
 Other features:
   Support for variables
   Support for multiple expressions on one line, separated by commas
+
+Example:
+  > a = 2^3 + 2
+  10
+  > b = sqrt(49) * 2 + 6
+  20
+  > sin(2 * pi) + a * b / log10(a^(b/4)) + cos(rad(12*(a+b))) + sign(a)
+  42
