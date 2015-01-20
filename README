@@ -33,6 +33,10 @@ Other features:
   Tab-completion for functions, constants, and variables
 
 Example:
+  > sin(pi/2)
+  1
+  > sin(rad(90))
+  1
   > a = 2^3 + 2
   10
   > b = sqrt(49) * 2 + 6
