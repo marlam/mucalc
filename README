@@ -28,8 +28,9 @@ Available operators:
   ^, *, /, +, -, ==, !=, <, >, <=, >=, ||, &&, ?:
 
 Other features:
-  Support for variables
+  Support for variables without explicit declaration
   Support for multiple expressions on one line, separated by commas
+  Tab-completion for functions, constants, and variables
 
 Example:
   > a = 2^3 + 2

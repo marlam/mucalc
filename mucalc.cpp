@@ -105,12 +105,13 @@ static double unary_plus(double x)
 
 /* muparser implicit variable definitions */
 
-static double* add_var(const char* /* name */, void* data)
+static std::vector<std::pair<std::string, std::unique_ptr<double>>> added_vars;
+
+static double* add_var(const char* name, void* /* data */)
 {
-    std::vector<std::unique_ptr<double>>& added_vars =
-        *reinterpret_cast<std::vector<std::unique_ptr<double>>*>(data);
-    added_vars.push_back(std::unique_ptr<double>(new double(0.0)));
-    return added_vars.back().get();
+    added_vars.push_back(std::make_pair(
+                std::string(name), std::unique_ptr<double>(new double(0.0))));
+    return added_vars.back().second.get();
 }
 
 /* muparser evaluation of an expression and printing of result */
@@ -154,14 +155,24 @@ static const char* function_names[] = {
 
 static char* completion_generator(const char* text, int state)
 {
-    static int constants_index, functions_index, len;
+    static int functions_index, constants_index, variables_index, len;
     if (state == 0) {
-        constants_index = 0;
         functions_index = 0;
+        constants_index = 0;
+        variables_index = 0;
         len = strlen(text);
     }
 
     const char* name;
+    while ((name = function_names[functions_index])) {
+        functions_index++;
+        if (strncmp(name, text, len) == 0)
+            break;
+    }
+    if (name) {
+        rl_completion_append_character = '(';
+        return strdup(name);
+    }
     while ((name = constant_names[constants_index])) {
         constants_index++;
         if (strncmp(name, text, len) == 0)
@@ -171,13 +182,15 @@ static char* completion_generator(const char* text, int state)
         rl_completion_append_character = '\0';
         return strdup(name);
     }
-    while ((name = function_names[functions_index])) {
-        functions_index++;
+    while (static_cast<size_t>(variables_index) < added_vars.size()) {
+        name = added_vars[variables_index].first.c_str();
+        variables_index++;
         if (strncmp(name, text, len) == 0)
             break;
+        name = NULL;
     }
     if (name) {
-        rl_completion_append_character = '(';
+        rl_completion_append_character = '\0';
         return strdup(name);
     }
     return NULL;
@@ -282,8 +295,7 @@ int main(int argc, char *argv[])
     parser.DefineFun("smoothstep", smoothstep);
     parser.DefineFun("mix", mix);
     parser.DefineInfixOprt("+", unary_plus);
-    std::vector<std::unique_ptr<double>> added_vars;
-    parser.SetVarFactory(add_var, &added_vars);
+    parser.SetVarFactory(add_var, NULL);
 
     // Evaluate command line expression(s)
     if (argc >= 2) {
