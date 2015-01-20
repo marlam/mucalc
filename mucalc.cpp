@@ -181,7 +181,7 @@ static char* completion_generator(const char* text, int state)
             break;
     }
     if (name) {
-        rl_completion_append_character = '\0';
+        rl_completion_append_character = ' ';
         return strdup(name);
     }
     // ... and finally variable names.
@@ -193,7 +193,7 @@ static char* completion_generator(const char* text, int state)
         name = NULL;
     }
     if (name) {
-        rl_completion_append_character = '\0';
+        rl_completion_append_character = ' ';
         return strdup(name);
     }
     return NULL;
