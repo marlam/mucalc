@@ -164,6 +164,7 @@ static char* completion_generator(const char* text, int state)
     }
 
     const char* name;
+    // first complete function names...
     while ((name = function_names[functions_index])) {
         functions_index++;
         if (strncmp(name, text, len) == 0)
@@ -173,6 +174,7 @@ static char* completion_generator(const char* text, int state)
         rl_completion_append_character = '(';
         return strdup(name);
     }
+    // ... then constant names...
     while ((name = constant_names[constants_index])) {
         constants_index++;
         if (strncmp(name, text, len) == 0)
@@ -182,6 +184,7 @@ static char* completion_generator(const char* text, int state)
         rl_completion_append_character = '\0';
         return strdup(name);
     }
+    // ... and finally variable names.
     while (static_cast<size_t>(variables_index) < added_vars.size()) {
         name = added_vars[variables_index].first.c_str();
         variables_index++;
@@ -196,7 +199,7 @@ static char* completion_generator(const char* text, int state)
     return NULL;
 }
 
-/* readline history file */
+/* readline history file location */
 
 std::string history_file()
 {
@@ -231,10 +234,12 @@ void print_short_help()
 
 void print_core_help()
 {
-    printf("Evaluates mathematical expression(s) and prints the results, one per line.\n");
-    printf("Expressions can either be given on the command line, or read from standard input.\n");
-    printf("Expressions are evaluated using muparser <http://muparser.beltoforion.de/>.\n");
-    printf("Separating multiple expressions with commas is supported.\n");
+    printf("Evaluates mathematical expression(s) and prints the results.\n");
+    printf("Expressions can be given as arguments, read from an input stream, or\n");
+    printf("typed interactively.\n");
+    printf("The evaluation is handled by muparser <http://muparser.beltoforion.de/>.\n");
+    printf("Variables can be used without explicit declaration. Separating multiple\n");
+    printf("expressions with commas is supported.\n");
     printf("Available constants:\n");
     printf("  pi, e\n");
     printf("Available functions:\n");
@@ -247,6 +252,12 @@ void print_core_help()
     printf("  clamp, step, smoothstep, mix\n");
     printf("Available operators:\n");
     printf("  ^, *, /, +, -, ==, !=, <, >, <=, >=, ||, &&, ?:\n");
+    printf("Expression examples:\n");
+    printf("  sin(pi/2)\n");
+    printf("  sin(rad(90))\n");
+    printf("  a = 2^3 + 2\n");
+    printf("  b = sqrt(49) * 2 + 6\n");
+    printf("  sin(2 * pi) + a * b / log10(a^(b/4)) + cos(rad(12*(a+b))) + sign(a)\n");
 }
 
 int main(int argc, char *argv[])
