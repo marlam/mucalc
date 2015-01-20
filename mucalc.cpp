@@ -338,6 +338,7 @@ int main(int argc, char *argv[])
             } else {
                 retval = eval_and_print(parser, line);
             }
+            free(line);
         }
         if (quit_via_control_d)
             printf("^D\n");
