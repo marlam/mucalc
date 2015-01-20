@@ -320,7 +320,7 @@ int main(int argc, char *argv[])
     if (isatty(fileno(stdin))) {
         // interactive: use readline()
         rl_sort_completion_matches = 0;
-        rl_basic_word_break_characters = " \t";
+        rl_basic_word_break_characters = " ()+-*/^?:,=!<>|&\t";
         rl_basic_quote_characters = "";
         rl_completion_entry_function = completion_generator;
         stifle_history(1000);
