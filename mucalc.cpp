@@ -331,10 +331,14 @@ int main(int argc, char *argv[])
     // Evaluate standard input
     if (isatty(fileno(stdin))) {
         // interactive: use readline()
+        rl_readline_name = "mucalc"; // so you can use "$if mucalc" in .inputrc
         rl_sort_completion_matches = 0;
         rl_basic_word_break_characters = " ()+-*/^?:,=!<>|&\t";
         rl_basic_quote_characters = "";
         rl_completion_entry_function = completion_generator;
+        char* inputrc_line = xstrdup("set blink-matching-paren on");
+        rl_parse_and_bind(inputrc_line);
+        free(inputrc_line);
         stifle_history(1000);
         read_history(history_file().c_str());
         char* line;
