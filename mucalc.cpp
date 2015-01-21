@@ -18,6 +18,7 @@
 
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
 #include <cmath>
 
 #include <vector>
@@ -136,6 +137,17 @@ static int eval_and_print(mu::Parser& parser, const char* expr)
 
 /* readline custom completion */
 
+char* xstrdup(const char *s)
+{
+    char* p = strdup(s);
+    if (!p) {
+        fputs(strerror(ENOMEM), stderr);
+        fputc('\n', stderr);
+        exit(1);
+    }
+    return p;
+}
+
 static const char* constant_names[] = {
     "pi", "e",
     NULL
@@ -172,7 +184,7 @@ static char* completion_generator(const char* text, int state)
     }
     if (name) {
         rl_completion_append_character = '(';
-        return strdup(name);
+        return xstrdup(name);
     }
     // ... then constant names...
     while ((name = constant_names[constants_index])) {
@@ -182,7 +194,7 @@ static char* completion_generator(const char* text, int state)
     }
     if (name) {
         rl_completion_append_character = ' ';
-        return strdup(name);
+        return xstrdup(name);
     }
     // ... and finally variable names.
     while (static_cast<size_t>(variables_index) < added_vars.size()) {
@@ -194,7 +206,7 @@ static char* completion_generator(const char* text, int state)
     }
     if (name) {
         rl_completion_append_character = ' ';
-        return strdup(name);
+        return xstrdup(name);
     }
     return NULL;
 }
