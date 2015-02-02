@@ -125,7 +125,7 @@ static int eval_and_print(mu::Parser& parser, const char* expr)
         int n;
         double* results = parser.Eval(n);
         for (int j = 0; j < n; j++) {
-            printf("%.17g%s", results[j], j == n - 1 ? "\n" : ", ");
+            printf("%.12g%s", results[j], j == n - 1 ? "\n" : ", ");
         }
     }
     catch (mu::Parser::exception_type& e) {
