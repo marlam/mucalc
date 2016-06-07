@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015
+ * Copyright (C) 2015, 2016
  * Martin Lambers <marlam@marlam.de>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -104,6 +104,32 @@ static double unary_plus(double x)
     return x;
 }
 
+static double my_srand48(double x)
+{
+    srand48(x);
+    return x;
+}
+
+static double my_random()
+{
+    static bool initialized = false;
+    static unsigned short xsubi[3];
+    if (!initialized) {
+        FILE* f = fopen("/dev/urandom", "r");
+        if (f) {
+            setbuf(f, NULL);
+            fread(xsubi, sizeof(unsigned short), 3, f);
+            fclose(f);
+        } else {
+            xsubi[0] = 0x330E;
+            xsubi[1] = getpid() & 0xffff;
+            xsubi[2] = time(NULL) & 0xffff;
+        }
+        initialized = true;
+    }
+    return erand48(xsubi);
+}
+
 /* muparser implicit variable definitions */
 
 static std::vector<std::pair<std::string, std::unique_ptr<double>>> added_vars;
@@ -162,6 +188,7 @@ static const char* function_names[] = {
     "fract", "int", "ceil", "floor", "round", "rint", "trunc", "mod",
     "min", "max", "sum", "avg", "med",
     "clamp", "step", "smoothstep", "mix",
+    "random", "srand48", "drand48",
     NULL
 };
 
@@ -236,7 +263,7 @@ std::string history_file()
 
 void print_short_version()
 {
-    printf("mucalc version 1.3\n");
+    printf("mucalc version 1.4\n");
 }
 
 void print_short_help()
@@ -262,6 +289,7 @@ void print_core_help()
     printf("  abs, sign, fract, int, ceil, floor, round, rint, trunc, mod,\n");
     printf("  min, max, sum, avg, med,\n");
     printf("  clamp, step, smoothstep, mix\n");
+    printf("  random, srand48, drand48\n");
     printf("Available operators:\n");
     printf("  ^, *, /, +, -, ==, !=, <, >, <=, >=, ||, &&, ?:\n");
     printf("Expression examples:\n");
@@ -279,7 +307,7 @@ int main(int argc, char *argv[])
     // --version, --help
     if (argc == 2 && strcmp(argv[1], "--version") == 0) {
         print_short_version();
-        printf("Copyright (C) 2015 Martin Lambers <marlam@marlam.de>\n");
+        printf("Copyright (C) 2016 Martin Lambers <marlam@marlam.de>\n");
         printf("License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>.\n");
         printf("This is free software: you are free to change and redistribute it.\n");
         printf("There is NO WARRANTY, to the extent permitted by law.\n");
@@ -317,6 +345,9 @@ int main(int argc, char *argv[])
     parser.DefineFun("step", step);
     parser.DefineFun("smoothstep", smoothstep);
     parser.DefineFun("mix", mix);
+    parser.DefineFun("random", my_random);
+    parser.DefineFun("srand48", my_srand48);
+    parser.DefineFun("drand48", drand48);
     parser.DefineInfixOprt("+", unary_plus);
     parser.SetVarFactory(add_var, NULL);
 

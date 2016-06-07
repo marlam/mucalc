@@ -23,6 +23,7 @@ Available functions:
   abs, sign, fract, int, ceil, floor, round, rint, trunc, mod,
   min, max, sum, avg, med,
   clamp, step, smoothstep, mix
+  random, srand48, drand48
 
 Available operators:
   ^, *, /, +, -, ==, !=, <, >, <=, >=, ||, &&, ?:
