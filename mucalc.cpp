@@ -143,7 +143,8 @@ static double* add_var(const char* name, void* /* data */)
 
 /* muparser evaluation of an expression and printing of result */
 
-static int eval_and_print(mu::Parser& parser, const char* expr)
+static int eval_and_print(mu::Parser& parser, const std::string& expr,
+        const std::string& errmsg_prefix = std::string())
 {
     int retval = 0;
     try {
@@ -155,7 +156,27 @@ static int eval_and_print(mu::Parser& parser, const char* expr)
         }
     }
     catch (mu::Parser::exception_type& e) {
-        fprintf(stderr, "%s\n", e.GetMsg().c_str());
+        // Fix up the exception before reporting the error
+        mu::string_type expr = e.GetExpr();
+        mu::string_type token = e.GetToken();
+        mu::EErrorCodes code = e.GetCode();
+        size_t pos = e.GetPos();
+        // Let positions start at 1 and fix position reported for EOF
+        if (code != mu::ecUNEXPECTED_EOF)
+            pos++;
+        if (pos == 0)
+            pos = 1;
+        // Remove excess blank from token
+        if (token.back() == ' ')
+            token.pop_back();
+        mu::Parser::exception_type fixed_err(code, pos, token);
+        // Report the fixed error
+        if (errmsg_prefix.length() > 0)
+            fprintf(stderr, "%s: ", errmsg_prefix.c_str());
+        fprintf(stderr, "%s\n", fixed_err.GetMsg().c_str());
+        fprintf(stderr, "%s\n", expr.c_str());
+        std::string blanks(fixed_err.GetPos() - 1, ' ');
+        fprintf(stderr, "%s^\n", blanks.c_str());
         retval = 1;
     }
     return retval;
@@ -263,7 +284,7 @@ std::string history_file()
 
 void print_short_version()
 {
-    printf("mucalc version 1.4\n");
+    printf("mucalc version 1.5\n");
 }
 
 void print_short_help()
@@ -354,7 +375,8 @@ int main(int argc, char *argv[])
     // Evaluate command line expression(s)
     if (argc >= 2) {
         for (int i = 1; i < argc; i++) {
-            retval = eval_and_print(parser, argv[i]);
+            std::string errmsg_prefix = std::string("Expression ") + std::to_string(i);
+            retval = eval_and_print(parser, argv[i], errmsg_prefix);
         }
         return retval;
     }
@@ -404,11 +426,15 @@ int main(int argc, char *argv[])
         write_history(history_file().c_str());
     } else {
         // use std::getline()
+        size_t linecounter = 1;
         do {
             std::string line;
             std::getline(std::cin, line);
-            if (std::cin)
-                retval = eval_and_print(parser, line.c_str());
+            if (std::cin) {
+                std::string errmsg_prefix = std::string("Line ") + std::to_string(linecounter);
+                retval = eval_and_print(parser, line, errmsg_prefix);
+            }
+            linecounter++;
         }
         while (std::cin);
     }
