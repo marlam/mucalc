@@ -366,9 +366,9 @@ int main(int argc, char *argv[])
     parser.DefineFun("step", step);
     parser.DefineFun("smoothstep", smoothstep);
     parser.DefineFun("mix", mix);
-    parser.DefineFun("random", my_random);
-    parser.DefineFun("srand48", my_srand48);
-    parser.DefineFun("drand48", drand48);
+    parser.DefineFun("random", my_random, false);
+    parser.DefineFun("srand48", my_srand48, false);
+    parser.DefineFun("drand48", drand48, false);
     parser.DefineInfixOprt("+", unary_plus);
     parser.SetVarFactory(add_var, NULL);
 
