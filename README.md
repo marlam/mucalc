@@ -28,11 +28,12 @@ Available operators:
 - `^`, `*`, `/`, `+`, `-`, `==`, `!=`, `<`, `>`, `<=`, `>=`, `||`, `&&`, `?:`
 
 Other features:
-  Support for variables without explicit declaration
-  Support for multiple expressions on one line, separated by commas
-  Tab-completion for functions, constants, and variables
+- Support for variables without explicit declaration
+- Support for multiple expressions on one line, separated by commas
+- Tab-completion for functions, constants, and variables
 
 Example:
+
   `> sin(pi/2)`
 
   `1`
