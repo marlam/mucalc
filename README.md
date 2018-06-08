@@ -1,5 +1,4 @@
-mucalc - convenient command line calculator
-===========================================
+# mucalc - convenient command line calculator
 
 This calculator is intended for command line users.
 
@@ -7,10 +6,10 @@ It evaluates mathematical expressions that are given as arguments, read from
 an input stream, or typed interactively.
 
 In interactive mode, it provides line editing with tab-completion and
-persistent history using GNU readline <https://www.gnu.org/software/readline>.
+persistent history using [GNU readline](https://www.gnu.org/software/readline).
 
-The evaluation of expressions is handled by the muParser
-<http://muparser.beltoforion.de/> math parser library.
+The evaluation of expressions is handled by the [muParser]
+(http://muparser.beltoforion.de/) math parser library.
 
 Available constants:
   pi, e
