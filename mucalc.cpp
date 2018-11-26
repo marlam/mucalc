@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015, 2016
+ * Copyright (C) 2015, 2016, 2018
  * Martin Lambers <marlam@marlam.de>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -40,6 +40,13 @@
 static const double e = 2.7182818284590452353602874713526625;
 static const double pi = 3.1415926535897932384626433832795029;
 
+/* muparser custom operators */
+
+static double mod(double x, double y)
+{
+    return x - y * floor(x / y);
+}
+
 /* muparser custom functions */
 
 static double deg(double x)
@@ -60,11 +67,6 @@ static double int_(double x)
 static double fract(double x)
 {
     return x - floor(x);
-}
-
-static double mod(double x, double y)
-{
-    return x - y * floor(x / y);
 }
 
 static double med(const double* x, int n)
@@ -206,7 +208,7 @@ static const char* function_names[] = {
     "sinh", "asinh", "cosh", "acosh", "tanh", "atanh",
     "pow", "exp", "exp2", "exp10", "log", "ln", "log2", "log10",
     "sqrt", "cbrt", "abs", "sign",
-    "fract", "int", "ceil", "floor", "round", "rint", "trunc", "mod",
+    "fract", "int", "ceil", "floor", "round", "rint", "trunc",
     "min", "max", "sum", "avg", "med",
     "clamp", "step", "smoothstep", "mix",
     "random", "srand48", "drand48",
@@ -307,12 +309,12 @@ void print_core_help()
     printf("  sin, asin, cos, acos, tan, atan, atan2,\n");
     printf("  sinh, asinh, cosh, acosh, tanh, atanh,\n");
     printf("  pow, exp, exp2, exp10, log, ln, log2, log10, sqrt, cbrt,\n");
-    printf("  abs, sign, fract, int, ceil, floor, round, rint, trunc, mod,\n");
+    printf("  abs, sign, fract, int, ceil, floor, round, rint, trunc,\n");
     printf("  min, max, sum, avg, med,\n");
     printf("  clamp, step, smoothstep, mix\n");
     printf("  random, srand48, drand48\n");
     printf("Available operators:\n");
-    printf("  ^, *, /, +, -, ==, !=, <, >, <=, >=, ||, &&, ?:\n");
+    printf("  ^, *, /, %, +, -, ==, !=, <, >, <=, >=, ||, &&, ?:\n");
     printf("Expression examples:\n");
     printf("  sin(pi/2)\n");
     printf("  sin(rad(90))\n");
@@ -328,7 +330,7 @@ int main(int argc, char *argv[])
     // --version, --help
     if (argc == 2 && strcmp(argv[1], "--version") == 0) {
         print_short_version();
-        printf("Copyright (C) 2016 Martin Lambers <marlam@marlam.de>\n");
+        printf("Copyright (C) 2018 Martin Lambers <marlam@marlam.de>\n");
         printf("License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>.\n");
         printf("This is free software: you are free to change and redistribute it.\n");
         printf("There is NO WARRANTY, to the extent permitted by law.\n");
@@ -348,6 +350,7 @@ int main(int argc, char *argv[])
     parser.ClearConst();
     parser.DefineConst("e", e);
     parser.DefineConst("pi", pi);
+    parser.DefineOprt("%", mod, mu::prMUL_DIV, mu::oaRIGHT, true);
     parser.DefineFun("deg", deg);
     parser.DefineFun("rad", rad);
     parser.DefineFun("atan2", atan2);
@@ -360,7 +363,6 @@ int main(int argc, char *argv[])
     parser.DefineFun("floor", floor);
     parser.DefineFun("round", round);
     parser.DefineFun("trunc", trunc);
-    parser.DefineFun("mod", mod);
     parser.DefineFun("med", med);
     parser.DefineFun("clamp", clamp);
     parser.DefineFun("step", step);
