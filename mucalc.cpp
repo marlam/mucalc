@@ -286,7 +286,7 @@ std::string history_file()
 
 void print_short_version()
 {
-    printf("mucalc version 1.5\n");
+    printf("mucalc version 1.6\n");
 }
 
 void print_short_help()
