@@ -19,13 +19,13 @@ Available functions:
 - `sin`, `asin`, `cos`, `acos`, `tan`, `atan`, `atan2`,
 - `sinh`, `asinh`, `cosh`, `acosh`, `tanh`, `atanh`,
 - `pow`, `exp`, `exp2`, `exp10`, `log`, `ln`, `log2`, `log10`, `sqrt`, `cbrt`,
-- `abs`, `sign`, `fract`, `int`, `ceil`, `floor`, `round`, `rint`, `trunc`, `mod`,
+- `abs`, `sign`, `fract`, `int`, `ceil`, `floor`, `round`, `rint`, `trunc`,
 - `min`, `max`, `sum`, `avg`, `med`,
 - `clamp`, `step`, `smoothstep`, `mix`,
 - `random`, `srand48`, `drand48`
 
 Available operators:
-- `^`, `*`, `/`, `+`, `-`, `==`, `!=`, `<`, `>`, `<=`, `>=`, `||`, `&&`, `?:`
+- `^`, `*`, `/`, `%`, `+`, `-`, `==`, `!=`, `<`, `>`, `<=`, `>=`, `||`, `&&`, `?:`
 
 Other features:
 - Support for variables without explicit declaration
