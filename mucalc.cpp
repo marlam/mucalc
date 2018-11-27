@@ -314,7 +314,7 @@ void print_core_help()
     printf("  clamp, step, smoothstep, mix\n");
     printf("  random, srand48, drand48\n");
     printf("Available operators:\n");
-    printf("  ^, *, /, %, +, -, ==, !=, <, >, <=, >=, ||, &&, ?:\n");
+    printf("  ^, *, /, %%, +, -, ==, !=, <, >, <=, >=, ||, &&, ?:\n");
     printf("Expression examples:\n");
     printf("  sin(pi/2)\n");
     printf("  sin(rad(90))\n");
