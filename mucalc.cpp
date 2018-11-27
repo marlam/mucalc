@@ -350,7 +350,7 @@ int main(int argc, char *argv[])
     parser.ClearConst();
     parser.DefineConst("e", e);
     parser.DefineConst("pi", pi);
-    parser.DefineOprt("%", mod, mu::prMUL_DIV, mu::oaRIGHT, true);
+    parser.DefineOprt("%", mod, mu::prMUL_DIV, mu::oaLEFT, true);
     parser.DefineFun("deg", deg);
     parser.DefineFun("rad", rad);
     parser.DefineFun("atan2", atan2);
