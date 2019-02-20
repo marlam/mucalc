@@ -12,9 +12,11 @@ The evaluation of expressions is handled by the
 [muParser](http://muparser.beltoforion.de/) math parser library.
 
 Available constants:
+
 - `pi`, `e`
  
 Available functions:
+
 - `deg`, `rad`,
 - `sin`, `asin`, `cos`, `acos`, `tan`, `atan`, `atan2`,
 - `sinh`, `asinh`, `cosh`, `acosh`, `tanh`, `atanh`,
@@ -25,9 +27,11 @@ Available functions:
 - `random`, `srand48`, `drand48`
 
 Available operators:
+
 - `^`, `*`, `/`, `%`, `+`, `-`, `==`, `!=`, `<`, `>`, `<=`, `>=`, `||`, `&&`, `?:`
 
 Other features:
+
 - Support for variables without explicit declaration
 - Support for multiple expressions on one line, separated by commas
 - Tab-completion for functions, constants, and variables
