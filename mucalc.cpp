@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015, 2016, 2018
+ * Copyright (C) 2015, 2016, 2018, 2019
  * Martin Lambers <marlam@marlam.de>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 #include <cstdio>
@@ -286,7 +286,7 @@ std::string history_file()
 
 void print_short_version()
 {
-    printf("mucalc version 1.7\n");
+    printf("mucalc version 2.0 -- see <https://marlam.de/mucalc>\n");
 }
 
 void print_short_help()
@@ -330,14 +330,16 @@ int main(int argc, char *argv[])
     // --version, --help
     if (argc == 2 && strcmp(argv[1], "--version") == 0) {
         print_short_version();
-        printf("Copyright (C) 2018 Martin Lambers <marlam@marlam.de>\n");
-        printf("License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>.\n");
+        printf("Copyright (C) 2019 Martin Lambers <marlam@marlam.de>\n");
+        printf("License GPLv3+: GNU GPL version 3 or later <https://gnu.org/licenses/gpl.html>.\n");
         printf("This is free software: you are free to change and redistribute it.\n");
         printf("There is NO WARRANTY, to the extent permitted by law.\n");
         return 0;
     }
     if (argc == 2 && strcmp(argv[1], "--help") == 0) {
-        printf("Usage: %s [<expression...>]\n", argv[0]);
+        print_short_version();
+        printf("\n");
+        printf("Usage: mucalc [<expression...>]\n");
         printf("\n");
         print_core_help();
         printf("\n");
