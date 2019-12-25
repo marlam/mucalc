@@ -106,6 +106,8 @@ static double unary_plus(double x)
     return x;
 }
 
+#if defined(_WIN32) || defined(_WIN64)
+#else
 static double my_srand48(double x)
 {
     srand48(x);
@@ -131,6 +133,7 @@ static double my_random()
     }
     return erand48(xsubi);
 }
+#endif
 
 /* muparser implicit variable definitions */
 
@@ -211,7 +214,10 @@ static const char* function_names[] = {
     "fract", "int", "ceil", "floor", "round", "rint", "trunc",
     "min", "max", "sum", "avg", "med",
     "clamp", "step", "smoothstep", "mix",
+#if defined(_WIN32) || defined(_WIN64)
+#else
     "random", "srand48", "drand48",
+#endif
     NULL
 };
 
@@ -267,7 +273,7 @@ std::string history_file()
 {
     static std::string histfile;
     if (histfile.empty()) {
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_WIN64)
         const char* appdata = getenv("APPDATA");
         if (appdata)
             histfile = std::string(appdata) + '\\';
@@ -312,7 +318,10 @@ void print_core_help()
     printf("  abs, sign, fract, int, ceil, floor, round, rint, trunc,\n");
     printf("  min, max, sum, avg, med,\n");
     printf("  clamp, step, smoothstep, mix\n");
+#if defined(_WIN32) || defined(_WIN64)
+#else
     printf("  random, srand48, drand48\n");
+#endif
     printf("Available operators:\n");
     printf("  ^, *, /, %%, +, -, ==, !=, <, >, <=, >=, ||, &&, ?:\n");
     printf("Expression examples:\n");
@@ -370,9 +379,12 @@ int main(int argc, char *argv[])
     parser.DefineFun("step", step);
     parser.DefineFun("smoothstep", smoothstep);
     parser.DefineFun("mix", mix);
+#if defined(_WIN32) || defined(_WIN64)
+#else
     parser.DefineFun("random", my_random, false);
     parser.DefineFun("srand48", my_srand48, false);
     parser.DefineFun("drand48", drand48, false);
+#endif
     parser.DefineInfixOprt("+", unary_plus);
     parser.SetVarFactory(add_var, NULL);
 
