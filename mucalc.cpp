@@ -302,7 +302,7 @@ void print_core_help()
     printf("Evaluates mathematical expression(s) and prints the results.\n");
     printf("Expressions can be given as arguments, read from an input stream, or\n");
     printf("typed interactively.\n");
-    printf("The evaluation is handled by muparser <http://muparser.beltoforion.de/>.\n");
+    printf("The evaluation is handled by muparser <https://beltoforion.de/en/muparser/>.\n");
     printf("Variables can be used without explicit declaration. Separating multiple\n");
     printf("expressions with commas is supported.\n");
     printf("The last result is available in a special variable named '_'.\n");
