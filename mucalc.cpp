@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015, 2016, 2018, 2019
+ * Copyright (C) 2015, 2016, 2018, 2019, 2020, 2021
  * Martin Lambers <marlam@marlam.de>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -20,12 +20,16 @@
 #include <cstdlib>
 #include <cstring>
 #include <cmath>
+#include <cerrno>
 
 #include <vector>
 #include <memory>
 #include <algorithm>
+#include <utility>
 #include <iostream>
 #include <string>
+#include <random>
+#include <chrono>
 
 #include <unistd.h>
 
@@ -106,34 +110,25 @@ static double unary_plus(double x)
     return x;
 }
 
-#if defined(_WIN32) || defined(_WIN64)
-#else
-static double my_srand48(double x)
+static std::mt19937_64 prng;
+static std::uniform_real_distribution<double> uniform_distrib(0.0, 1.0);
+static std::normal_distribution<double> gaussian_distrib(0.0, 1.0);
+
+static double seed(double x)
 {
-    srand48(x);
-    return x;
+    prng.seed(x);
+    return 0.0;
 }
 
-static double my_random()
+static double random_()
 {
-    static bool initialized = false;
-    static unsigned short xsubi[3];
-    if (!initialized) {
-        FILE* f = fopen("/dev/urandom", "r");
-        if (f) {
-            setbuf(f, NULL);
-            fread(xsubi, sizeof(unsigned short), 3, f);
-            fclose(f);
-        } else {
-            xsubi[0] = 0x330E;
-            xsubi[1] = getpid() & 0xffff;
-            xsubi[2] = time(NULL) & 0xffff;
-        }
-        initialized = true;
-    }
-    return erand48(xsubi);
+    return uniform_distrib(prng);
 }
-#endif
+
+static double gaussian()
+{
+    return gaussian_distrib(prng);
+}
 
 /* muparser implicit variable definitions */
 
@@ -214,10 +209,7 @@ static const char* function_names[] = {
     "fract", "int", "ceil", "floor", "round", "rint", "trunc",
     "min", "max", "sum", "avg", "med",
     "clamp", "step", "smoothstep", "mix",
-#if defined(_WIN32) || defined(_WIN64)
-#else
-    "random", "srand48", "drand48",
-#endif
+    "seed", "random", "gaussian",
     NULL
 };
 
@@ -318,10 +310,7 @@ void print_core_help()
     printf("  abs, sign, fract, int, ceil, floor, round, rint, trunc,\n");
     printf("  min, max, sum, avg, med,\n");
     printf("  clamp, step, smoothstep, mix\n");
-#if defined(_WIN32) || defined(_WIN64)
-#else
-    printf("  random, srand48, drand48\n");
-#endif
+    printf("  seed, random, gaussian\n");
     printf("Available operators:\n");
     printf("  ^, *, /, %%, +, -, ==, !=, <, >, <=, >=, ||, &&, ?:\n");
     printf("Expression examples:\n");
@@ -339,7 +328,7 @@ int main(int argc, char *argv[])
     // --version, --help
     if (argc == 2 && strcmp(argv[1], "--version") == 0) {
         print_short_version();
-        printf("Copyright (C) 2019 Martin Lambers <marlam@marlam.de>\n");
+        printf("Copyright (C) 2021 Martin Lambers <marlam@marlam.de>\n");
         printf("License GPLv3+: GNU GPL version 3 or later <https://gnu.org/licenses/gpl.html>.\n");
         printf("This is free software: you are free to change and redistribute it.\n");
         printf("There is NO WARRANTY, to the extent permitted by law.\n");
@@ -379,14 +368,14 @@ int main(int argc, char *argv[])
     parser.DefineFun("step", step);
     parser.DefineFun("smoothstep", smoothstep);
     parser.DefineFun("mix", mix);
-#if defined(_WIN32) || defined(_WIN64)
-#else
-    parser.DefineFun("random", my_random, false);
-    parser.DefineFun("srand48", my_srand48, false);
-    parser.DefineFun("drand48", drand48, false);
-#endif
+    parser.DefineFun("seed", seed, false);
+    parser.DefineFun("random", random_, false);
+    parser.DefineFun("gaussian", gaussian, false);
     parser.DefineInfixOprt("+", unary_plus);
     parser.SetVarFactory(add_var, NULL);
+
+    // Initialize the random number generator
+    prng.seed(std::chrono::system_clock::now().time_since_epoch().count());
 
     // Evaluate command line expression(s)
     if (argc >= 2) {
