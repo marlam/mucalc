@@ -289,7 +289,7 @@ std::string history_file()
 
 void print_short_version()
 {
-    printf("mucalc version 2.0 -- see <https://marlam.de/mucalc>\n");
+    printf("mucalc version 2.1 -- see <https://marlam.de/mucalc>\n");
 }
 
 void print_short_help()
