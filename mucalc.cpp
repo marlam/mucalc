@@ -143,7 +143,9 @@ static double* add_var(const char* name, void* /* data */)
 
 /* muparser evaluation of an expression and printing of result */
 
-static int eval_and_print(mu::Parser& parser, const std::string& expr,
+static int eval_and_print(mu::Parser& parser,
+        double* last_result,
+        const std::string& expr,
         const std::string& errmsg_prefix = std::string())
 {
     int retval = 0;
@@ -153,6 +155,9 @@ static int eval_and_print(mu::Parser& parser, const std::string& expr,
         double* results = parser.Eval(n);
         for (int j = 0; j < n; j++) {
             printf("%.12g%s", results[j], j == n - 1 ? "\n" : ", ");
+        }
+        if (n > 0) {
+            *last_result = results[0];
         }
     }
     catch (mu::Parser::exception_type& e) {
@@ -300,6 +305,7 @@ void print_core_help()
     printf("The evaluation is handled by muparser <http://muparser.beltoforion.de/>.\n");
     printf("Variables can be used without explicit declaration. Separating multiple\n");
     printf("expressions with commas is supported.\n");
+    printf("The last result is available in a special variable named '_'.\n");
     printf("Available constants:\n");
     printf("  pi, e\n");
     printf("Available functions:\n");
@@ -345,6 +351,9 @@ int main(int argc, char *argv[])
         return 0;
     }
 
+    // Special variable _ for last result
+    double last_result = 0.0;
+
     // Initialize the parser
     mu::Parser parser;
     parser.ClearConst();
@@ -373,6 +382,7 @@ int main(int argc, char *argv[])
     parser.DefineFun("gaussian", gaussian, false);
     parser.DefineInfixOprt("+", unary_plus);
     parser.SetVarFactory(add_var, NULL);
+    parser.DefineVar("_", &last_result);
 
     // Initialize the random number generator
     prng.seed(std::chrono::system_clock::now().time_since_epoch().count());
@@ -381,7 +391,7 @@ int main(int argc, char *argv[])
     if (argc >= 2) {
         for (int i = 1; i < argc; i++) {
             std::string errmsg_prefix = std::string("Expression ") + std::to_string(i);
-            retval = eval_and_print(parser, argv[i], errmsg_prefix);
+            retval = eval_and_print(parser, &last_result, argv[i], errmsg_prefix);
         }
         return retval;
     }
@@ -421,7 +431,7 @@ int main(int argc, char *argv[])
                 quit_via_control_d = false;
                 break;
             } else {
-                retval = eval_and_print(parser, line);
+                retval = eval_and_print(parser, &last_result, line);
             }
             free(line);
         }
@@ -437,7 +447,7 @@ int main(int argc, char *argv[])
             std::getline(std::cin, line);
             if (std::cin) {
                 std::string errmsg_prefix = std::string("Line ") + std::to_string(linecounter);
-                retval = eval_and_print(parser, line, errmsg_prefix);
+                retval = eval_and_print(parser, &last_result, line, errmsg_prefix);
             }
             linecounter++;
         }
