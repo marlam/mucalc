@@ -445,7 +445,7 @@ int main(int argc, char *argv[])
         do {
             std::string line;
             std::getline(std::cin, line);
-            if (std::cin) {
+            if (std::cin && !line.empty()) {
                 std::string errmsg_prefix = std::string("Line ") + std::to_string(linecounter);
                 retval = eval_and_print(parser, &last_result, line, errmsg_prefix);
             }
