@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015, 2016, 2018, 2019, 2020, 2021
+ * Copyright (C) 2015, 2016, 2018, 2019, 2020, 2021, 2025
  * Martin Lambers <marlam@marlam.de>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -322,9 +322,26 @@ void print_core_help()
     printf("Expression examples:\n");
     printf("  sin(pi/2)\n");
     printf("  sin(rad(90))\n");
+    printf("  # comment\n");
     printf("  a = 2^3 + 2\n");
     printf("  b = sqrt(49) * 2 + 6\n");
     printf("  sin(2 * pi) + a * b / log10(a^(b/4)) + cos(rad(12*(a+b))) + sign(a)\n");
+}
+
+std::string trim(const std::string& s)
+{
+    size_t first_nonspace = s.find_first_not_of(" \t");
+    if (first_nonspace != std::string::npos) {
+        size_t last_nonspace = s.find_last_not_of(" \t");
+        return s.substr(first_nonspace, last_nonspace - first_nonspace + 1);
+    } else {
+        return std::string();
+    }
+}
+
+bool is_comment(const std::string& trimmed_string)
+{
+    return (!trimmed_string.empty() && trimmed_string[0] == '#');
 }
 
 int main(int argc, char *argv[])
@@ -414,24 +431,22 @@ int main(int argc, char *argv[])
         print_short_version();
         print_short_help();
         while ((line = readline("> "))) {
-            std::string string_line = line;
-            std::string trimmed_line;
-            size_t first_nonspace = string_line.find_first_not_of(' ');
-            if (first_nonspace != std::string::npos) {
-                size_t last_nonspace = string_line.find_last_not_of(' ');
-                trimmed_line = string_line.substr(first_nonspace, last_nonspace - first_nonspace + 1);
-            }
-            if (!trimmed_line.empty())
-                add_history(line);
-            if (trimmed_line.empty()) {
-                print_short_help();
-            } else if (trimmed_line == "help" || trimmed_line == "?") {
-                print_core_help();
-            } else if (trimmed_line == "quit" || trimmed_line == "exit") {
-                quit_via_control_d = false;
-                break;
+            std::string trimmed_line = trim(line);
+            if (is_comment(trimmed_line)) {
+                printf("%s\n", line);
             } else {
-                retval = eval_and_print(parser, &last_result, line);
+                if (!trimmed_line.empty())
+                    add_history(line);
+                if (trimmed_line.empty()) {
+                    print_short_help();
+                } else if (trimmed_line == "help" || trimmed_line == "?") {
+                    print_core_help();
+                } else if (trimmed_line == "quit" || trimmed_line == "exit") {
+                    quit_via_control_d = false;
+                    break;
+                } else {
+                    retval = eval_and_print(parser, &last_result, line);
+                }
             }
             free(line);
         }
@@ -445,9 +460,16 @@ int main(int argc, char *argv[])
         do {
             std::string line;
             std::getline(std::cin, line);
-            if (std::cin && !line.empty()) {
-                std::string errmsg_prefix = std::string("Line ") + std::to_string(linecounter);
-                retval = eval_and_print(parser, &last_result, line, errmsg_prefix);
+            if (std::cin) {
+                std::string trimmed_line = trim(line);
+                if (!trimmed_line.empty()) {
+                    if (is_comment(trimmed_line)) {
+                        printf("%s\n", line.c_str());
+                    } else {
+                        std::string errmsg_prefix = std::string("Line ") + std::to_string(linecounter);
+                        retval = eval_and_print(parser, &last_result, line, errmsg_prefix);
+                    }
+                }
             }
             linecounter++;
         }
